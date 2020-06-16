@@ -46,15 +46,14 @@ const HospitalList: React.FC<any> = ({ hospitals }) => {
           hospitals.map((hospital: any) => (
             <List key={hospital.id} className={classes.list}>
               <div className={classes.cover}>
-                <h3 className={classes.hospital_name}>{hospital.poi.name}</h3>
+                <h3 className={classes.hospital_name}>{hospital.name}</h3>
                 <span>
                   <LocalHospitalIcon className={classes.icon} />
                 </span>
               </div>
 
               <p className={classes.address}>
-                Address: {hospital.address.freeformAddress},{" "}
-                {hospital.address.country}
+                Address: {hospital.vicinity}
               </p>
             </List>
           ))

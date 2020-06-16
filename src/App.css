@@ -14,8 +14,9 @@ position: relative;
 .page-body {
 min-height: 100vh;
 background-size: 100%;
-place-items: center;
+place-items: center !important;
 padding-top: 50px;
+justify-content: center !important;
 }
 .header{
   height:5.8rem;
@@ -46,4 +47,9 @@ margin: 15px 15px;
 @media screen and (max-width: 764px) {
   font-size: 15px;
 }
+}
+.loading {
+  font-style: italic;
+  color:#195e96;
+  justify-content: center;
 }

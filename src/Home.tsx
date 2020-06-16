@@ -1,67 +1,140 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
+import usePlacesAutocomplete, {getGeocode, getLatLng} from "use-places-autocomplete";
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxPopover,
+  ComboboxList,
+  ComboboxOption
+} from "@reach/combobox";
+import FormControl from "@material-ui/core/FormControl";
+import Radio from "@material-ui/core/Radio";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormLabel from "@material-ui/core/FormLabel";
 import './App.css';
-import { HospitalProps } from "./components/Interfaces";
-import Search from "./components/Search";
+// import { HospitalProps } from "./components/Interfaces";
+// import Search from "./components/Search";
 import HospitalList from "./components/HospitalList";
 
 export const Home: React.FC = () => {
-  const [radius, setRadius] = useState<string>("1");
-  const [hospitals, setHospitals] = useState<Array<HospitalProps>>([]);
-  const [cord, setCord] = useState<string>("");
+  const {
+    value,
+    suggestions: {status, data},
+    setValue
+} = usePlacesAutocomplete();
 
-  useEffect(() => {
-    getLocation();
-  }, []);
+  // const [radius, setRadius] = useState<string>("1");
+  //const [hospitals, setHospitals] = useState<Array<HospitalProps>>([]);
+  const [loading, setLoading] = useState(true);
+  const [lat, setLat] = useState<number>(0);
+  const [lng, setLng] = useState<number>(0);
+  const [distance, setDistance] = useState<string | number>("1000");
+  const [hospitals, setHospitals] = useState([{
+    "id": "",
+    "name": "",
+    "rating": "",
+    "user_ratings_total": "",
+    "vicinity": ""
+}]);
 
-  const getLocation = () => {
-    if ("geolocation" in navigator) {
-      console.log("geolocation is available");
-      navigator.geolocation.getCurrentPosition((position) => {
-        let latitude = position.coords.latitude;
-        let longitude = position.coords.longitude;
-        setCord(`${latitude}, ${longitude}`);
-      });
-    } else {
-      console.log("geolocation is not available");
-    }
-  };
+useEffect(() => {
+const getHospitals = async () => {
+  const proxyurl = "https://cors-anywhere.herokuapp.com/";
+  const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${distance}&types=health&name=hospital&key=AIzaSyBEnXuoaWR0E7pKgnbgJqKJJZCV4er09n0`
+  let response = await fetch(proxyurl + url);
+  return await response.json();
+};
+getHospitals()
+            .then(hospital => {
+            setHospitals(hospital.results);
+            setLoading(!loading)});
+}, [distance, lat, lng]);
 
+//END
+const handleInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
+setValue(e.target.value);
+};
 
-  const searchHospital = (event: any) => {
-    const key = process.env.REACT_APP_API_KEY;
-    let obj = {
-      type: "CIRCLE",
-      position: cord,
-      radius,
-    };
-    let json_obj = JSON.stringify(obj);
+const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+setDistance(event.target.value as number);
+};
 
-    fetch(
-      "https://api.tomtom.com/search/2/categorySearch/hospital.json?key=" +
-        key +
-        "&geometryList=[" +
-        json_obj +
-        "]"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setHospitals(data.results);
-      })
-      .catch((e) => console.log(e));
-  };
+const handleSelect = (val: string): void => {
+setValue(val, false);
 
+getGeocode({address: val})
+  .then(results => getLatLng(results[0]))
+  .then(({lat, lng}) => {
+      console.log('📍 Coordinates: ', {lat, lng, distance});
+      setLat(lat);
+      setLng(lng);
+  }).catch(error => {
+  console.log('😱 Error: ', error)
+});
+};
+
+const renderSuggestions = (): JSX.Element => {
+  const suggestions = data.map(({id, description}: any) => (
+      <ComboboxOption key={id} value={description}/>
+  ));
+
+  return (
+      <>
+          {suggestions}
+          <li className="logo">
+              <img
+                  src="https://developers.google.com/maps/documentation/images/powered_by_google_on_white.png"
+                  alt="Powered by Google"
+              />
+          </li>
+      </>
+  );
+};
+  
   return (
       <section className="main">
             <div className="header">
                 <p className="title">Hospitals search</p>
                 <p className="title-bottom">Know the hospitals around you in case of emergency</p></div>
             <section className="page-body">
-      <Search
-        searchHospital={searchHospital}
-        onChange={(e) => setRadius(e.target.value)}
-        radius={radius}
-      />
+            <Combobox onSelect={handleSelect} aria-labelledby="demo" style={{display: "flex",
+              justifyContent: "center",
+              paddingBottom: "40px",}} >
+            <ComboboxInput
+                style={{padding: "0.375rem 0.75rem",
+                fontSize: "1rem",
+                fontWeight: 400,
+                lineHeight: 1.5,
+                border: "1px solid #ced4da",
+                borderRadius: "0.25rem",
+                transition: "border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out",
+                width: "40%",
+                marginTop: "50px"}}
+                value={value}
+                onChange={handleInput}
+                placeholder="Enter your search area e.g ikeja"
+            />
+            <ComboboxPopover>
+                <ComboboxList>{status === "OK" && renderSuggestions()}</ComboboxList>
+            </ComboboxPopover>
+        </Combobox>
+
+        <FormControl component="fieldset" style={{display: "flex",
+              justifyContent: "center",
+              paddingBottom: "40px",}}>
+            <FormLabel component="legend">Distance</FormLabel>
+            <RadioGroup row={true} aria-label="Range" name="range" value={distance} onChange={handleChange}>
+                <FormControlLabel value="1000" control={<Radio/>} label="1km"/>
+                <FormControlLabel value="2000" control={<Radio/>} label="2km"/>
+                <FormControlLabel value="5000" control={<Radio/>} label="5km"/>
+                <FormControlLabel value="10000" control={<Radio/>} label="10km"/>
+            </RadioGroup>
+        </FormControl>
+        {loading ?
       <HospitalList hospitals={hospitals} />
+      : <h3 className="loading">loading...</h3>}
       </section>
       </section>
   );
