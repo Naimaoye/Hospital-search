@@ -40,7 +40,7 @@ const HospitalList: React.FC<any> = ({ hospitals }) => {
     <div>
       <Container maxWidth="sm">
         {hospitals && hospitals.length === 0 ? (
-          <p className={classes.p}>Enter your search distance in metres</p>
+          <p className={classes.p}>Enter your search area above and choose a distance</p>
         ) : (
           hospitals &&
           hospitals.map((hospital: any) => (
