@@ -49,10 +49,9 @@ const getHospitals = async () => {
 getHospitals()
             .then(hospital => {
             setHospitals(hospital.results);
-            setLoading(!loading)});
+            setLoading(false)});
 }, [distance, lat, lng]);
 
-//END
 const handleInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
 setValue(e.target.value);
 };
@@ -99,31 +98,18 @@ const renderSuggestions = (): JSX.Element => {
                 <p className="title">Hospitals search</p>
                 <p className="title-bottom">Know the hospitals around you in case of emergency</p></div>
             <section className="page-body">
-            <Combobox onSelect={handleSelect} aria-labelledby="demo" style={{display: "flex",
-              justifyContent: "center",
-              paddingBottom: "40px",}} >
-            <ComboboxInput
-                style={{padding: "0.375rem 0.75rem",
-                fontSize: "1rem",
-                fontWeight: 400,
-                lineHeight: 1.5,
-                border: "1px solid #ced4da",
-                borderRadius: "0.25rem",
-                transition: "border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out",
-                width: "40%",
-                marginTop: "50px"}}
+            <Combobox onSelect={handleSelect} aria-labelledby="demo" className="search" >
+            <ComboboxInput className="input"
                 value={value}
                 onChange={handleInput}
                 placeholder="Enter your search area e.g ikeja"
             />
-            <ComboboxPopover>
-                <ComboboxList>{status === "OK" && renderSuggestions()}</ComboboxList>
+            <ComboboxPopover className="popover">
+                <ComboboxList className="combolist">{status === "OK" && renderSuggestions()}</ComboboxList>
             </ComboboxPopover>
         </Combobox>
-
-        <FormControl component="fieldset" style={{display: "flex",
-              justifyContent: "center",
-              paddingBottom: "40px",}}>
+        <div className="form">
+        <FormControl component="fieldset">
             <FormLabel component="legend">Distance</FormLabel>
             <RadioGroup row={true} aria-label="Range" name="range" value={distance} onChange={handleChange}>
                 <FormControlLabel value="1000" control={<Radio/>} label="1km"/>
@@ -132,9 +118,8 @@ const renderSuggestions = (): JSX.Element => {
                 <FormControlLabel value="10000" control={<Radio/>} label="10km"/>
             </RadioGroup>
         </FormControl>
-        {loading ?
+        </div>
       <HospitalList hospitals={hospitals} />
-      : <h3 className="loading">loading...</h3>}
       </section>
       </section>
   );
