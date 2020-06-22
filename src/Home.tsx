@@ -120,6 +120,7 @@ const renderHistory = (id: string) => {
                   setHospitals(hospital.results);
                   });
     }
+    return true;
   });
   // console.log("historyData",historyData);
 };
