@@ -1,3 +1,6 @@
+body{
+  overflow-x: hidden;
+}
 .main {
 min-height: 100vh;
 background-size: 100%;
@@ -6,16 +9,14 @@ background-image: linear-gradient(136deg, #F5F7FA 0%, #F4F6F8 100%);
 background-repeat: no-repeat;
 background-position: center;
 position: relative;
-@media screen and (min-width: 1440px){
-    margin-top:56px;
-    background-size: 80%;
-}
+overflow-x: hidden;
 }
 .page-body {
 min-height: 100vh;
 background-size: 100%;
 place-items: center !important;
-padding-top: 50px;
+display: flex;
+width: 100%;
 justify-content: center !important;
 }
 .header{
@@ -30,12 +31,7 @@ letter-spacing: 0.1px;
 text-align: left;
 text-transform:uppercase;
 margin: 15px 15px;
-@media screen and (min-width: 768px) and (max-width: 1023px) {
-  font-size: 20px;
-}
-@media screen and (max-width: 764px) {
-  font-size: 15px;
-}
+
 }
 .title-bottom {
   font-family: Poppins-Bold;
@@ -48,6 +44,28 @@ margin: 15px 15px;
   font-size: 15px;
 }
 }
+.right-side{
+  flex: 70%;
+  height: 100%;
+  min-height: 784px;
+  position: relative;
+  left: 0;
+  top: 0;
+  padding: 24px;
+}
+.left-side{
+  flex: 30%;
+  bottom: 0;
+  top: 0;
+  background: linear-gradient(rgba(183, 187, 230, 0.63),
+  rgba(183, 187, 230, 0.63)), url('./undraw_medical_care_movn.png') center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-blend-mode: multiply;
+    height: 100%;
+    min-height: 1100px;
+    bottom: 0;
+}
 .loading {
   font-style: italic;
   color:#9eb6ca;
@@ -56,7 +74,6 @@ margin: 15px 15px;
 .form {
   display: flex;
   justify-content: center;
-  padding-bottom: 40px;
 }
 .input {
   padding: 0.375rem 0.75rem;
@@ -66,13 +83,14 @@ margin: 15px 15px;
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  width: 40%;
+  width: 300px;
   margin-top: 50px;
 }
 .search {
   display: flex;
   justify-content: center;
   padding-bottom: 40px;
+  /* flex:70%; */
 }
 .popover{
   background-color: rgba(255, 255, 255, 0.7);
@@ -83,4 +101,90 @@ margin: 15px 15px;
 }
 .combolist:hover{
   cursor: pointer;
+}
+.down-body{
+  flex: 50%;
+}
+.top{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-column-gap: 10px;
+  margin: 0 auto;
+  /* height: 50px; */
+}
+.custom-select{
+  font-family: Arial;
+  display: inline-block;
+  /* flex: 30%; */
+}
+.custom-select select {
+  background-color: rgba(255, 255, 255, 0.7);
+  color: #195e96;
+  padding: 0.375rem 0.75rem;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.5;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  width: 150px;
+  margin-top: 50px;
+  cursor: pointer;
+}
+/* Style items (options): */
+.select-items {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.7);
+  color: #195e96;
+  padding: 0.375rem 0.75rem;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.5;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  width: 150px;
+  margin-top: 50px;
+  cursor: pointer;
+}
+.search-result{
+  grid-template-columns: repeat(4, 1fr);
+  grid-row-gap: 10px;
+}
+@media screen and (max-width: 768px){
+  .page-body{
+    display: grid;
+    overflow-x: hidden;
+  }
+  .left-side{
+    visibility: hidden;
+    height: 0px;
+    width: 0px;
+    overflow: hidden;
+    min-height: 0px;
+  }
+  .input {
+    width: 200px;
+    margin-top: 10px;
+    height: 50px;
+  }
+  .right-side{
+    /* min-height: 300px; */
+    display: grid;
+  }
+  .search {
+    padding-bottom: 10px;
+  }
+  .custom-select select{
+    width: 80px;
+    height: 50px;
+  }
+}
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+  .title-bottom{
+  font-size: 20px;
+  }
+}
+@media screen and (min-width: 1440px){
+  
 }

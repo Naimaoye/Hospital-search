@@ -15,6 +15,9 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormLabel from "@material-ui/core/FormLabel";
 import './App.css';
 import HospitalList from "./components/HospitalList";
+import firebase from './firebase';
+import History from "./components/History";
+
 
 export const Home: React.FC = () => {
   const {
@@ -33,11 +36,14 @@ export const Home: React.FC = () => {
     "user_ratings_total": "",
     "vicinity": ""
 }]);
+ const [searchType, setSearchType] = useState<string>('hospital');
+ const [history, setHistory] = useState<any>([]);
+//  const [historyData, setHistoryData] = useState<any>(undefined);
 
 useEffect(() => {
 const getHospitals = async () => {
   const proxyurl = "https://cors-anywhere.herokuapp.com/";
-  const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${distance}&types=health&name=hospital&key=AIzaSyBEnXuoaWR0E7pKgnbgJqKJJZCV4er09n0`
+  const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${distance}&types=health&name=${searchType}&key=AIzaSyBEnXuoaWR0E7pKgnbgJqKJJZCV4er09n0`
   let response = await fetch(proxyurl + url);
   return await response.json();
 };
@@ -45,7 +51,29 @@ getHospitals()
             .then(hospital => {
             setHospitals(hospital.results);
             });
-}, [distance, lat, lng]);
+            // post values to database.
+            // get values from database
+            firebase
+            .firestore()
+            .collection('medicals')
+            .onSnapshot((snapshot) =>{
+              const newHistory = snapshot.docs.map((doc) => (
+                 { id: doc.id, ...doc.data()}
+              ))
+              setHistory(newHistory.reverse());
+            });
+
+            firebase
+            .firestore()
+            .collection('medicals')
+            .add({
+              distance,
+              searchType,
+              location: value,
+              lat,
+              lng
+            })
+}, [distance, lat, lng, searchType]);
 
 const handleInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
 setValue(e.target.value);
@@ -55,6 +83,10 @@ const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
 setDistance(event.target.value as number);
 };
 
+const handleSelectChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  setSearchType(event.currentTarget.value as string);
+  };
+  
 const handleSelect = (val: string): void => {
 setValue(val, false);
 
@@ -69,6 +101,28 @@ getGeocode({address: val})
 });
 };
 
+const renderHistory = (id: string) => {
+  history.map((el: any) => {
+    if (el.id === id) {
+      setValue(el.location);
+      setDistance(el.distance);
+      setSearchType(el.searchType);
+      setLat(el.lat);
+      setLng(el.lng);
+      const getHospitals = async () => {
+        const proxyurl = "https://cors-anywhere.herokuapp.com/";
+        const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${distance}&types=health&name=${searchType}&key=AIzaSyBEnXuoaWR0E7pKgnbgJqKJJZCV4er09n0`
+        let response = await fetch(proxyurl + url);
+        return await response.json();
+      };
+      getHospitals()
+                  .then(hospital => {
+                  setHospitals(hospital.results);
+                  });
+    }
+  });
+  // console.log("historyData",historyData);
+};
 const renderSuggestions = (): JSX.Element => {
   const suggestions = data.map(({id, description}: any) => (
       <ComboboxOption key={id} value={description}/>
@@ -93,28 +147,48 @@ const renderSuggestions = (): JSX.Element => {
                 <p className="title">Hospitals search</p>
                 <p className="title-bottom">Know the hospitals around you in case of emergency</p></div>
             <section className="page-body">
-            <Combobox onSelect={handleSelect} aria-labelledby="demo" className="search" >
-            <ComboboxInput className="input"
-                value={value}
-                onChange={handleInput}
-                placeholder="Enter your search area e.g ikeja"
-            />
-            <ComboboxPopover className="popover">
-                <ComboboxList className="combolist">{status === "OK" && renderSuggestions()}</ComboboxList>
-            </ComboboxPopover>
-        </Combobox>
-        <div className="form">
-        <FormControl component="fieldset">
-            <FormLabel component="legend">Distance</FormLabel>
-            <RadioGroup row={true} aria-label="Range" name="range" value={distance} onChange={handleChange}>
-                <FormControlLabel value="1000" control={<Radio/>} label="1km"/>
-                <FormControlLabel value="2000" control={<Radio/>} label="2km"/>
-                <FormControlLabel value="5000" control={<Radio/>} label="5km"/>
-                <FormControlLabel value="10000" control={<Radio/>} label="10km"/>
-            </RadioGroup>
-        </FormControl>
+            <div className="left-side">
+              <div className="visited-search">
+                {/* return a list of visited search here */}
+              </div>
+            </div>
+            <div className="right-side">
+              <div className="top">
+                <Combobox onSelect={handleSelect} aria-labelledby="demo" className="search" >
+                <ComboboxInput className="input"
+                    value={value}
+                    onChange={handleInput}
+                    placeholder="Enter your search area e.g ikeja"
+                />
+                <ComboboxPopover className="popover">
+                    <ComboboxList className="combolist">{status === "OK" && renderSuggestions()}</ComboboxList>
+                </ComboboxPopover>
+                </Combobox>
+              <div className="custom-select">
+                <select className="selected" value={searchType} onChange={handleSelectChange}>
+                  <option className="select-items" value="hospital">Hospital</option>
+                  <option className="select-items" value="pharmacy">Phamarcy</option>
+                  <option className="select-items" value="medical office">Medical Offices</option>
+                  <option className="select-items" value="clinic">Clinics</option>
+                </select>
+              </div>
+              </div>
+            <div className="form">
+            <FormControl component="fieldset">
+                <FormLabel component="legend">Distance</FormLabel>
+                <RadioGroup row={true} aria-label="Range" name="range" value={distance} onChange={handleChange}>
+                    <FormControlLabel value="1000" control={<Radio/>} label="1km"/>
+                    <FormControlLabel value="2000" control={<Radio/>} label="2km"/>
+                    <FormControlLabel value="5000" control={<Radio/>} label="5km"/>
+                    <FormControlLabel value="10000" control={<Radio/>} label="10km"/>
+                </RadioGroup>
+            </FormControl>
+            </div> 
+          {/* <div className="search-result"> */}
+            <HospitalList hospitals={hospitals} />
+            <History history={history} renderHistory={renderHistory} />
+          {/* </div> */}
         </div>
-      <HospitalList hospitals={hospitals} />
       </section>
       </section>
   );
