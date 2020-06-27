@@ -1,14 +1,44 @@
 import React from 'react';
-import Home from './Home'
-// import logo from './logo.svg';
-// import './App.css';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { ToastProvider } from 'react-toast-notifications';
+import { Routes, AuthRoute } from './routes';
+import { AuthProvider } from './context/auth';
 
 const App: React.FC = () => {
   return (
-    <div>
-      <Home />
-    </div>
+    <AuthProvider>
+    <ToastProvider
+        placement="bottom-center"
+    >
+      <Router>
+                <Switch>
+                    {
+                        Routes.map((route: any) => {
+                            const { component, exact, path } = route;
+                            return route.protected ? (
+                                <AuthRoute
+                                    key={path}
+                                    exact={exact}
+                                    path={path}
+                                    component={component}
+                                />
+                            ) 
+                            : (
+                                    <Route
+                                        key={path}
+                                        exact={exact}
+                                        path={path}
+                                        component={component}
+                                    />
+                            );
+                        })
+                    }
+                </Switch>
+            </Router>
+            </ToastProvider>
+            </AuthProvider>
   );
 }
 
 export default App;
+

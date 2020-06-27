@@ -15,9 +15,10 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormLabel from "@material-ui/core/FormLabel";
 import './App.css';
 import HospitalList from "./components/HospitalList";
-import firebase from './firebase';
+import { firestore } from './firebase';
 import History from "./components/History";
 
+/* For autocomplete API */
 
 export const Home: React.FC = () => {
   const {
@@ -25,6 +26,8 @@ export const Home: React.FC = () => {
     suggestions: {status, data},
     setValue
 } = usePlacesAutocomplete();
+
+/* Set app states */
 
   const [lat, setLat] = useState<number>(0);
   const [lng, setLng] = useState<number>(0);
@@ -38,7 +41,8 @@ export const Home: React.FC = () => {
 }]);
  const [searchType, setSearchType] = useState<string>('hospital');
  const [history, setHistory] = useState<any>([]);
-//  const [historyData, setHistoryData] = useState<any>(undefined);
+ const currentUser = localStorage.getItem('user');
+
 
 useEffect(() => {
 const getHospitals = async () => {
@@ -51,27 +55,25 @@ getHospitals()
             .then(hospital => {
             setHospitals(hospital.results);
             });
-            // post values to database.
-            // get values from database
-            firebase
-            .firestore()
-            .collection('medicals')
-            .onSnapshot((snapshot) =>{
-              const newHistory = snapshot.docs.map((doc) => (
-                 { id: doc.id, ...doc.data()}
-              ))
-              setHistory(newHistory.reverse());
-            });
 
-            firebase
-            .firestore()
+            // firestore
+            // .collection('medicals')
+            // .onSnapshot((snapshot) =>{
+            //   const newHistory = snapshot.docs.map((doc) => (
+            //      { id: doc.id, ...doc.data()}
+            //   ))
+            //   setHistory(newHistory.reverse());
+            // });
+
+            firestore
             .collection('medicals')
             .add({
               distance,
               searchType,
               location: value,
               lat,
-              lng
+              lng,
+              user: currentUser
             })
 }, [distance, lat, lng, searchType]);
 
@@ -90,16 +92,20 @@ const handleSelectChange = (event: React.ChangeEvent<{ value: unknown }>) => {
 const handleSelect = (val: string): void => {
 setValue(val, false);
 
+/* Get users location */
+
 getGeocode({address: val})
   .then(results => getLatLng(results[0]))
   .then(({lat, lng}) => {
-      console.log('📍 Coordinates: ', {lat, lng, distance});
+      console.log({lat, lng, distance});
       setLat(lat);
       setLng(lng);
   }).catch(error => {
-  console.log('😱 Error: ', error)
+  console.log(error)
 });
 };
+
+/* Get users search history */
 
 const renderHistory = (id: string) => {
   history.map((el: any) => {
@@ -122,8 +128,10 @@ const renderHistory = (id: string) => {
     }
     return true;
   });
-  // console.log("historyData",historyData);
 };
+
+/* Rendering autocompleteAPI suggestions */
+
 const renderSuggestions = (): JSX.Element => {
   const suggestions = data.map(({id, description}: any) => (
       <ComboboxOption key={id} value={description}/>
@@ -148,12 +156,6 @@ const renderSuggestions = (): JSX.Element => {
                 <p className="title">Hospitals search</p>
                 <p className="title-bottom">Know the hospitals around you in case of emergency</p></div>
             <section className="page-body">
-            <div className="left-side">
-              <div className="visited-search">
-                {/* return a list of visited search here */}
-              </div>
-            </div>
-            <div className="right-side">
               <div className="top">
                 <Combobox onSelect={handleSelect} aria-labelledby="demo" className="search" >
                 <ComboboxInput className="input"
@@ -187,9 +189,8 @@ const renderSuggestions = (): JSX.Element => {
             </div> 
           {/* <div className="search-result"> */}
             <HospitalList hospitals={hospitals} />
-            <History history={history} renderHistory={renderHistory} />
+            <History renderHistory={renderHistory} />
           {/* </div> */}
-        </div>
       </section>
       </section>
   );

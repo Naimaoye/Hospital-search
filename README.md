@@ -1,44 +1,55 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Hospitals, pharmacies and Medical centers search
+In this COVID world that we live in, it is important that people can easily access medical assistance if need be. With that in mind, the goal of this challenge is to build an application that can locate all the hospitals within a given area.
 
-## Available Scripts
+These following technologies must be used when building this application
 
-In the project directory, you can run:
+- [ReactJS](https://reactjs.org/docs/getting-started.html) and [React Hooks](https://reactjs.org/docs/hooks-intro.html)
+- [Typescript](https://create-react-app.dev/docs/adding-typescript/)
+- [Google Maps API](https://developers.google.com/maps/documentation) or [Google Places API](https://developers.google.com/places/web-service/intro) or Any Third Party Location API of Choice
+- Choose one of the following Component Libraries
+    - [AntD](https://ant.design/docs/react/introduce)
+    - [Material Design](https://material-ui.com/)
+- [FireStore](https://firebase.google.com/docs/firestore)
+- [FireAuth](https://firebase.google.com/docs/auth) or [Auth0](https://auth0.com/docs/quickstarts/)
+- [GraphQL](https://graphql.org/)
 
-### `npm start`
+### Application Requirements
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Users should be able to type into a search bar
+- Users should be able to pick a geo-fencing radius for the search results
+    - (example - 5km, 10km, 20km etc...)
+- Typing into the search bar generates search results
+- User should be able to see the search results
+    - Up to you to decide how to render the results
+- The code must be completely written in **[Typescript](https://www.typescriptlang.org/)**
+- The application must be **deployed**
+    - (i.e - Firebase, Heroku, AWS, GCP, DigitalOcean, etc...)
+- Users should be able to search for Hospitals, Pharmacies, Clinics and Medical Offices
+- Users should be able to see past results
+    - There should be a place that a user can click to see all the results that have been searched on the app
+    - Clicking on a past search result should trigger a request and the results should be displayed for the user.
+    - Hint - You need to save the past searches in a database
+ **Authentication**
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+- User should be able to signup for the application
+- User should be able to access the application using their email and password
+- User should only be allowed to access the application if they are signed in
 
-### `npm test`
+**GraphQL**
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Build a GraphQL layer that pulls the users specific search results from your database or API
+- User should only see their own search history
 
-### `npm run build`
+### Judgement Criteria
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- The application must meet all criterias described in the above requirements and use the technologies specified
+- We are looking for well-designed user interfaces meaning your application should be visually pleasing.
+    - (Hint - Use the component libraries)
+- The design and usability of the application
+    - Leverage [dribble](https://dribbble.com/) for design inspiration
+- The application should be **bug free**
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+### URL
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Author
+#### Oyewale Naimat

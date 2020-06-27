@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 // import Button from "@material-ui/core/Button";
 import RoomIcon from "@material-ui/icons/Room";
@@ -108,7 +108,39 @@ const useStyles = makeStyles({
   },
 });
 
-const Search: React.FC<any> = ({ history, renderHistory }) => {
+const Search: React.FC<any> = ({ renderHistory }) => {
+  const [history, setHistory] = React.useState<any>([]);
+  const currentUser = localStorage.getItem('user');
+
+  const handlefetch = async () => {
+    const query = `
+    query {
+      getHistory(id: ${currentUser}) {
+        searchType
+        location
+        user
+        distance
+        lat
+        lng
+      }
+    }
+  `;
+  const url = 'https://us-central1-enye2-f7389.cloudfunctions.net/api';
+  const opts = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query })
+  };
+  fetch(url, opts)
+    .then(res => res.json())
+    .then(res =>console.log("resp", res))
+    .catch(console.error);
+  }
+  
+useEffect(() => {
+  handlefetch();
+});
+
   const classes = useStyles();
   return (
     <div>
