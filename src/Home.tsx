@@ -75,8 +75,9 @@ getHospitals()
                   location
                   user
                   distance
-                  lat
+                    lat
                   lng
+                  id
                 }
               }
             `;
