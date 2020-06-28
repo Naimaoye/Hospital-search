@@ -37,7 +37,7 @@ const AuthProvider = props => {
 	const [state, dispatch] = React.useReducer(authReducer, initialState);
 
 	const login = userData => {
-		localStorage.setItem('user', JSON.stringify(userData));
+		localStorage.setItem('user', userData);
 		dispatch({
 			payload: userData,
 			type: 'LOGIN',

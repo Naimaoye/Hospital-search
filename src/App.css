@@ -53,6 +53,22 @@ margin: 15px 15px;
   top: 0;
   padding: 40px 80px;
 }
+.left-view{
+  flex: 45%;
+  bottom: 0;
+  height: 100%;
+  min-height: 884px;
+  bottom: 0;
+}
+.right-view{
+  flex: 55%;
+  height: 100%;
+  min-height: 784px;
+  position: relative;
+  left: 0;
+  top: 0;
+  padding: 40px 80px;
+}
 .left-side{
   flex: 45%;
   bottom: 0;

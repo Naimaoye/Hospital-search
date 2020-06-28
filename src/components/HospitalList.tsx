@@ -17,7 +17,7 @@ const useStyles = makeStyles({
       marginBottom: "40px",
   },
   scroll: {
-    height: "300px",
+    height: "700px",
     overflowY: "scroll",
     overflowX: "hidden",
   },

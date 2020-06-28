@@ -42,6 +42,7 @@ export const Home: React.FC = () => {
  const [searchType, setSearchType] = useState<string>('hospital');
  const [history, setHistory] = useState<any>([]);
  const currentUser = localStorage.getItem('user');
+ const userId = JSON.stringify(currentUser);
 
 
 useEffect(() => {
@@ -56,15 +57,6 @@ getHospitals()
             setHospitals(hospital.results);
             });
 
-            // firestore
-            // .collection('medicals')
-            // .onSnapshot((snapshot) =>{
-            //   const newHistory = snapshot.docs.map((doc) => (
-            //      { id: doc.id, ...doc.data()}
-            //   ))
-            //   setHistory(newHistory.reverse());
-            // });
-
             firestore
             .collection('medicals')
             .add({
@@ -74,7 +66,31 @@ getHospitals()
               lat,
               lng,
               user: currentUser
-            })
+            });
+
+              const query = `
+              query {
+                getHistory(id: ${userId}) {
+                  searchType
+                  location
+                  user
+                  distance
+                  lat
+                  lng
+                }
+              }
+            `;
+            const url = 'https://us-central1-enye2-f7389.cloudfunctions.net/api';
+            const opts = {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ query })
+            };
+            fetch(url, opts)
+              .then(res => res.json())
+              .then(res => setHistory(res.data.getHistory))
+              .catch(console.error);
+            
 }, [distance, lat, lng, searchType]);
 
 const handleInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -109,12 +125,14 @@ getGeocode({address: val})
 
 const renderHistory = (id: string) => {
   history.map((el: any) => {
+    console.log("el",el);
     if (el.id === id) {
       setValue(el.location);
       setDistance(el.distance);
       setSearchType(el.searchType);
       setLat(el.lat);
       setLng(el.lng);
+     
       const getHospitals = async () => {
         const proxyurl = "https://cors-anywhere.herokuapp.com/";
         const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${distance}&types=health&name=${searchType}&key=AIzaSyBEnXuoaWR0E7pKgnbgJqKJJZCV4er09n0`
@@ -156,6 +174,7 @@ const renderSuggestions = (): JSX.Element => {
                 <p className="title">Hospitals search</p>
                 <p className="title-bottom">Know the hospitals around you in case of emergency</p></div>
             <section className="page-body">
+              <div className="left-view">
               <div className="top">
                 <Combobox onSelect={handleSelect} aria-labelledby="demo" className="search" >
                 <ComboboxInput className="input"
@@ -188,8 +207,11 @@ const renderSuggestions = (): JSX.Element => {
             </FormControl>
             </div> 
           {/* <div className="search-result"> */}
+            <History history={history} renderHistory={renderHistory} />
+            </div>
+            <div className="right-view">
             <HospitalList hospitals={hospitals} />
-            <History renderHistory={renderHistory} />
+            </div>
           {/* </div> */}
       </section>
       </section>
