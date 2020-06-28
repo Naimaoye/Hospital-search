@@ -1,6 +1,4 @@
-import React, { useContext } from "react";
-import { useToasts } from 'react-toast-notifications';
-import { useHistory } from 'react-router-dom';
+import React from "react";
 // import {
 //     StyledSection,
 // } from './styles';
