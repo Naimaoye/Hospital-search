@@ -17,7 +17,7 @@
     "@types/react-router-dom": "^5.1.5",
     "@types/react-toast-notifications": "^2.4.0",
     "antd": "^4.3.3",
-    "firebase": "^7.15.3",
+    "firebase": "^10.9.0",
     "google-maps-react": "^2.0.6",
     "leaflet": "^1.6.0",
     "react": "^16.13.1",
